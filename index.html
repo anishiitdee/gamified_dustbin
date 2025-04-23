@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoChamp Challenge</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .file-input {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .file-input input[type="file"] {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input label {
+            display: block;
+            padding: 15px;
+            border: 2px dashed #4CAF50;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .file-input label:hover {
+            background: rgba(76, 175, 80, 0.1);
+            transform: scale(1.02);
+        }
+
+        .preview-img {
+            max-width: 200px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .bin-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .blue-bin {
+            background: #2196F3;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .green-bin {
+            background: #4CAF50;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .leaderboard {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .winner-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .gold {
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700;
+        }
+
+        .silver {
+            color: #C0C0C0;
+            text-shadow: 0 0 10px #C0C0C0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="gold">🏆 EcoChamp Challenge</h1>
+        
+        <div class="upload-section">
+            <div class="file-input">
+                <input type="file" id="wastePhoto" accept="image/*" required>
+                <label for="wastePhoto">📸 Upload Waste Photo (Mandatory)</label>
+            </div>
+            <img class="preview-img" id="preview">
+
+            <h3>Select Waste Type:</h3>
+            <select id="wasteType">
+                <option value="paper">Paper/Cardboard</option>
+                <option value="plastic">Plastic Bottles</option>
+                <option value="can">Metal Cans</option>
+                <option value="food">Food Waste</option>
+                <option value="wrapper">Chip Wrappers</option>
+                <option value="glass">Glass Bottles</option>
+            </select>
+
+            <div class="bin-buttons">
+                <button class="blue-bin" onclick="submitWaste('blue')">Blue Bin</button>
+                <button class="green-bin" onclick="submitWaste('green')">Green Bin</button>
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <h2>🏅 Top Champions (Competition ended, Thanks !)</h2>
+            <div id="firstPlace" class="winner-card gold"></div>
+            <div id="secondPlace" class="winner-card silver"></div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            paper: 'blue',
+            plastic: 'blue',
+            can: 'blue',
+            food: 'green',
+            wrapper: 'green',
+            glass: 'blue'
+        };
+
+        let users = JSON.parse(localStorage.getItem('ecoUsers')) || {};
+        const DAILY_LIMIT = 10;
+        const COOLDOWN = 30000;
+
+        document.getElementById('wastePhoto').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const preview = document.getElementById('preview');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        function submitWaste(binColor) {
+            const photoInput = document.getElementById('wastePhoto');
+            if (!photoInput.files[0]) {
+                alert("⚠️ Please upload a photo first!");
+                return;
+            }
+
+            const userInfo = getUserInfo();
+            if (!userInfo.name || !userInfo.entryNo) return;
+
+            const userId = `${userInfo.name}_${userInfo.entryNo}`;
+            const wasteType = document.getElementById('wasteType').value;
+            
+            // Anti-cheat checks
+            const user = users[userId] || { 
+                points: 0, 
+                submissionsToday: 0,
+                lastSubmission: 0,
+                photos: []
+            };
+
+            if (Date.now() - user.lastSubmission < COOLDOWN) {
+                alert("Please wait 30 seconds between submissions!");
+                return;
+            }
+
+            if (user.submissionsToday >= DAILY_LIMIT) {
+                alert("Daily submission limit reached (10/day)!");
+                return;
+            }
+
+            // Store photo reference
+            const reader = new FileReader();
+            reader.onload = function() {
+                user.photos.push(reader.result);
+                
+                // Validate disposal
+                if (binColor === correctAnswers[wasteType]) {
+                    user.points += 10;
+                    user.submissionsToday++;
+                    user.lastSubmission = Date.now();
+                    users[userId] = user;
+                    
+                    localStorage.setItem('ecoUsers', JSON.stringify(users));
+                    updateLeaderboard();
+                    alert("✅ Submission Successful! 10 points added");
+                    resetForm();
+                } else {
+                    alert("❌ Incorrect disposal! No points awarded");
+                }
+            };
+            reader.readAsDataURL(photoInput.files[0]);
+        }
+
+        function getUserInfo() {
+            const name = prompt("Enter your full name:");
+            const entryNo = prompt("Enter your entry number:");
+            return { name, entryNo };
+        }
+
+        function updateLeaderboard() {
+            const fixedLeaderboard = [
+                { name: "Vishal Baghel", points: 470, class: "gold", icon: "🥇" },
+                { name: "Tejas Chitals", points: 410, class: "silver", icon: "🥈" },
+                { name: "Lokesh Lodhi", points: 390, class: "", icon: "🥉" }
+            ];
+
+            document.getElementById('firstPlace').innerHTML = `
+                ${fixedLeaderboard[0].icon} <span class="${fixedLeaderboard[0].class}">${fixedLeaderboard[0].name}</span><br>
+                Points: ${fixedLeaderboard[0].points}
+            `;
+
+            document.getElementById('secondPlace').innerHTML = `
+                ${fixedLeaderboard[1].icon} <span class="${fixedLeaderboard[1].class}">${fixedLeaderboard[1].name}</span><br>
+                Points: ${fixedLeaderboard[1].points}
+            `;
+
+            const thirdPlace = document.createElement('div');
+            thirdPlace.className = 'winner-card';
+            thirdPlace.innerHTML = `
+                ${fixedLeaderboard[2].icon} ${fixedLeaderboard[2].name}<br>
+                Points: ${fixedLeaderboard[2].points}
+            `;
+            document.querySelector('.leaderboard').appendChild(thirdPlace);
+        }
+
+
+        function resetForm() {
+            document.getElementById('wastePhoto').value = '';
+            document.getElementById('preview').style.display = 'none';
+            updateLeaderboard();
+        }
+
+        // Initial load
+        updateLeaderboard();
+    </script>
+</body>
+</html>
