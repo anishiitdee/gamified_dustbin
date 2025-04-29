@@ -1,286 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoChamp Challenge</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
-        
-        body {
-            font-family: 'Roboto Condensed', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: white;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            animation: fadeIn 1s ease-in;
-        }
-
-        .upload-section {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2rem;
-            border-radius: 15px;
-            margin: 20px 0;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-
-        .file-input {
-            position: relative;
-            margin: 20px 0;
-        }
-
-        .file-input input[type="file"] {
-            opacity: 0;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .file-input label {
-            display: block;
-            padding: 15px;
-            border: 2px dashed #4CAF50;
-            border-radius: 8px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .file-input label:hover {
-            background: rgba(76, 175, 80, 0.1);
-            transform: scale(1.02);
-        }
-
-        .preview-img {
-            max-width: 200px;
-            margin: 15px 0;
-            border-radius: 8px;
-            display: none;
-        }
-
-        .bin-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        button {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .blue-bin {
-            background: #2196F3;
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
-        }
-
-        .green-bin {
-            background: #4CAF50;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
-        }
-
-        .leaderboard {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2rem;
-            border-radius: 15px;
-            margin-top: 30px;
-        }
-
-        .winner-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .gold {
-            color: #FFD700;
-            text-shadow: 0 0 10px #FFD700;
-        }
-
-        .silver {
-            color: #C0C0C0;
-            text-shadow: 0 0 10px #C0C0C0;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EcoChamp Challenge</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
+    body {
+      font-family: 'Roboto Condensed', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      margin: 0; padding: 20px; min-height: 100vh;
+    }
+    .container { max-width:800px; margin:0 auto; animation:fadeIn 1s ease-in; }
+    .upload-section {
+      background: rgba(255,255,255,0.1);
+      padding:2rem;
+      border-radius:15px;
+      margin:20px 0;
+      backdrop-filter:blur(10px);
+      box-shadow:0 8px 32px rgba(0,0,0,0.1);
+    }
+    .upload-section input[type="text"] {
+      width:100%;
+      padding:12px;
+      margin-bottom:10px;
+      border-radius:8px;
+      border:none;
+    }
+    .file-input { position:relative; margin:20px 0; }
+    .file-input input[type="file"] {
+      position:absolute; inset:0; opacity:0; cursor:pointer;
+    }
+    .file-input label {
+      display:block; padding:15px;
+      border:2px dashed #4CAF50;
+      border-radius:8px; text-align:center;
+      transition:all .3s;
+    }
+    .file-input label:hover {
+      background:rgba(76,175,80,0.1); transform:scale(1.02);
+    }
+    .preview-img {
+      max-width:200px; margin:15px 0;
+      border-radius:8px; display:none;
+    }
+    .bin-buttons {
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:15px;
+      margin-top:20px;
+    }
+    button {
+      padding:15px 25px;
+      border:none; border-radius:8px;
+      cursor:pointer; font-weight:bold;
+      text-transform:uppercase;
+      transition:all .3s;
+    }
+    button:disabled {
+      opacity:0.5; cursor:not-allowed;
+    }
+    .blue-bin {
+      background:#2196F3;
+      box-shadow:0 4px 15px rgba(33,150,243,0.4);
+    }
+    .green-bin{
+      background:#4CAF50;
+      box-shadow:0 4px 15px rgba(76,175,80,0.4);
+    }
+    .leaderboard {
+      background:rgba(0,0,0,0.3);
+      padding:2rem; border-radius:15px;
+      margin-top:30px;
+    }
+    .winner-card {
+      background:rgba(255,255,255,0.05);
+      padding:20px; margin:15px 0;
+      border-radius:10px;
+      animation:slideIn .5s ease-out;
+    }
+    .gold {
+      color:#FFD700; text-shadow:0 0 10px #FFD700;
+    }
+    .silver {
+      color:#C0C0C0; text-shadow:0 0 10px #C0C0C0;
+    }
+    @keyframes fadeIn {
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    @keyframes slideIn{
+      from{opacity:0;transform:translateX(-20px)}
+      to{opacity:1;transform:translateX(0)}
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="gold">🏆 EcoChamp Challenge</h1>
-        
-        <div class="upload-section">
-            <div class="file-input">
-                <input type="file" id="wastePhoto" accept="image/*" required>
-                <label for="wastePhoto">📸 Upload Waste Photo (Mandatory)</label>
-            </div>
-            <img class="preview-img" id="preview">
+  <div class="container">
+    <h1 class="gold">🏆 EcoChamp Challenge</h1>
 
-            <h3>Select Waste Type:</h3>
-            <select id="wasteType">
-                <option value="paper">Paper/Cardboard</option>
-                <option value="plastic">Plastic Bottles</option>
-                <option value="can">Metal Cans</option>
-                <option value="food">Food Waste</option>
-                <option value="wrapper">Chip Wrappers</option>
-                <option value="glass">Glass Bottles</option>
-            </select>
+    <div class="upload-section">
+      <input type="text" id="name"    placeholder="Full Name"       required />
+      <input type="text" id="entryNo" placeholder="Entry Number"     required />
 
-            <div class="bin-buttons">
-                <button class="blue-bin" onclick="submitWaste('blue')">Blue Bin</button>
-                <button class="green-bin" onclick="submitWaste('green')">Green Bin</button>
-            </div>
-        </div>
+      <div class="file-input">
+        <input type="file" id="wastePhoto" accept="image/*" required />
+        <label for="wastePhoto">📸 Upload Waste Photo</label>
+      </div>
+      <img id="preview" class="preview-img" />
 
-        <div class="leaderboard">
-            <h2>🏅 Top Champions (Competition ended, Thanks !)</h2>
-            <div id="firstPlace" class="winner-card gold"></div>
-            <div id="secondPlace" class="winner-card silver"></div>
-        </div>
+      <h3>Select Waste Type:</h3>
+      <select id="wasteType">
+        <option value="paper">Paper/Cardboard</option>
+        <option value="plastic">Plastic Bottles</option>
+        <option value="can">Metal Cans</option>
+        <option value="food">Food Waste</option>
+        <option value="wrapper">Chip Wrappers</option>
+        <option value="glass">Glass Bottles</option>
+      </select>
+
+      <div class="bin-buttons">
+        <button id="blueBtn"  class="blue-bin"  disabled>Blue Bin</button>
+        <button id="greenBtn" class="green-bin" disabled>Green Bin</button>
+      </div>
     </div>
 
-    <script>
-        const correctAnswers = {
-            paper: 'blue',
-            plastic: 'blue',
-            can: 'blue',
-            food: 'green',
-            wrapper: 'green',
-            glass: 'blue'
+    <div class="leaderboard">
+      <h2>🏅 Top Champions</h2>
+      <div id="firstPlace"  class="winner-card gold"></div>
+      <div id="secondPlace" class="winner-card silver"></div>
+      <div id="thirdPlace"  class="winner-card"></div>
+    </div>
+  </div>
+
+  <script>
+    // Mapping of correct bins
+    const CORRECT = {
+      paper: 'blue',
+      plastic: 'blue',
+      can: 'blue',
+      food: 'green',
+      wrapper: 'green',
+      glass: 'blue'
+    };
+
+    // Your live Apps Script Web App URL (no placeholders)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKkxUcUaX5lxsAPozEXpgDwt5-vm8QKBi0ESQ-SYcHDFrW6YlkpcjvXeFPgLtQPLoGcg/exec';
+
+    // DOM elements
+    const nameEl    = document.getElementById('name');
+    const entryEl   = document.getElementById('entryNo');
+    const photoEl   = document.getElementById('wastePhoto');
+    const wasteEl   = document.getElementById('wasteType');
+    const preview   = document.getElementById('preview');
+    const blueBtn   = document.getElementById('blueBtn');
+    const greenBtn  = document.getElementById('greenBtn');
+
+    // Enable bin buttons only when Name, EntryNo, and photo are set
+    function updateButtonState() {
+      const ready = nameEl.value.trim() &&
+                    entryEl.value.trim() &&
+                    photoEl.files.length > 0;
+      blueBtn.disabled  = !ready;
+      greenBtn.disabled = !ready;
+    }
+
+    // Preview uploaded image
+    photoEl.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          preview.src = reader.result;
+          preview.style.display = 'block';
         };
+        reader.readAsDataURL(file); // FileReader API :contentReference[oaicite:2]{index=2}
+      } else {
+        preview.style.display = 'none';
+      }
+      updateButtonState();
+    });
 
-        let users = JSON.parse(localStorage.getItem('ecoUsers')) || {};
-        const DAILY_LIMIT = 10;
-        const COOLDOWN = 30000;
+    // Watch text inputs
+    nameEl.addEventListener('input', updateButtonState);
+    entryEl.addEventListener('input', updateButtonState);
 
-        document.getElementById('wastePhoto').addEventListener('change', function(e) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const preview = document.getElementById('preview');
-                preview.src = reader.result;
-                preview.style.display = 'block';
-            }
-            reader.readAsDataURL(e.target.files[0]);
+    // Send submission to Apps Script
+    function submitWaste(color) {
+      const points = color === CORRECT[wasteEl.value] ? 10 : 0;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const payload = {
+          name:      nameEl.value.trim(),
+          entryNo:   entryEl.value.trim(),
+          wasteType: wasteEl.value,
+          binColor:  color,
+          points:    points,
+          image:     reader.result
+        };
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => {
+              console.error(`Error ${response.status}:`, text);
+              throw new Error('Server error');
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.result === 'success') {
+            alert(`✅ ${points} points recorded!`);
+            resetForm();
+            loadLeaderboard(); // fetch fresh top-3 via Fetch API :contentReference[oaicite:3]{index=3}
+          } else {
+            console.error('Server JSON error:', data);
+            throw new Error(data.message || 'Unknown error');
+          }
+        })
+        .catch(err => {
+          console.error('Submission failed:', err);
+          alert('❌ Submission failed. See console.');
         });
+      };
+      reader.readAsDataURL(photoEl.files[0]);
+    }
 
-        function submitWaste(binColor) {
-            const photoInput = document.getElementById('wastePhoto');
-            if (!photoInput.files[0]) {
-                alert("⚠️ Please upload a photo first!");
-                return;
+    // Attach bin button handlers
+    blueBtn.addEventListener('click', () => submitWaste('blue'));
+    greenBtn.addEventListener('click', () => submitWaste('green'));
+
+    // Load and display top-3 leaderboard
+    function loadLeaderboard() {
+      fetch(`${SCRIPT_URL}?action=getLeaderboard`)
+        .then(r => r.json())
+        .then(data => {
+          ['firstPlace','secondPlace','thirdPlace'].forEach((id, i) => {
+            const el = document.getElementById(id);
+            if (data[i]) {
+              const medal = ['🥇','🥈','🥉'][i];
+              el.innerHTML = `
+                ${medal} ${data[i].name}<br>
+                Points: ${data[i].totalPoints}<br>
+                Entries: ${data[i].submissions}
+              `;
+            } else {
+              el.innerHTML = '';
             }
+          });
+        })
+        .catch(console.error);
+    }
 
-            const userInfo = getUserInfo();
-            if (!userInfo.name || !userInfo.entryNo) return;
+    // Reset form fields
+    function resetForm() {
+      nameEl.value = '';
+      entryEl.value = '';
+      photoEl.value = '';
+      preview.style.display = 'none';
+      updateButtonState();
+    }
 
-            const userId = `${userInfo.name}_${userInfo.entryNo}`;
-            const wasteType = document.getElementById('wasteType').value;
-            
-            // Anti-cheat checks
-            const user = users[userId] || { 
-                points: 0, 
-                submissionsToday: 0,
-                lastSubmission: 0,
-                photos: []
-            };
-
-            if (Date.now() - user.lastSubmission < COOLDOWN) {
-                alert("Please wait 30 seconds between submissions!");
-                return;
-            }
-
-            if (user.submissionsToday >= DAILY_LIMIT) {
-                alert("Daily submission limit reached (10/day)!");
-                return;
-            }
-
-            // Store photo reference
-            const reader = new FileReader();
-            reader.onload = function() {
-                user.photos.push(reader.result);
-                
-                // Validate disposal
-                if (binColor === correctAnswers[wasteType]) {
-                    user.points += 10;
-                    user.submissionsToday++;
-                    user.lastSubmission = Date.now();
-                    users[userId] = user;
-                    
-                    localStorage.setItem('ecoUsers', JSON.stringify(users));
-                    updateLeaderboard();
-                    alert("✅ Submission Successful! 10 points added");
-                    resetForm();
-                } else {
-                    alert("❌ Incorrect disposal! No points awarded");
-                }
-            };
-            reader.readAsDataURL(photoInput.files[0]);
-        }
-
-        function getUserInfo() {
-            const name = prompt("Enter your full name:");
-            const entryNo = prompt("Enter your entry number:");
-            return { name, entryNo };
-        }
-
-        function updateLeaderboard() {
-            const fixedLeaderboard = [
-                { name: "Vishal Baghel", points: 470, class: "gold", icon: "🥇" },
-                { name: "Tejas Chitals", points: 410, class: "silver", icon: "🥈" },
-                { name: "Lokesh Lodhi", points: 390, class: "", icon: "🥉" }
-            ];
-
-            document.getElementById('firstPlace').innerHTML = `
-                ${fixedLeaderboard[0].icon} <span class="${fixedLeaderboard[0].class}">${fixedLeaderboard[0].name}</span><br>
-                Points: ${fixedLeaderboard[0].points}
-            `;
-
-            document.getElementById('secondPlace').innerHTML = `
-                ${fixedLeaderboard[1].icon} <span class="${fixedLeaderboard[1].class}">${fixedLeaderboard[1].name}</span><br>
-                Points: ${fixedLeaderboard[1].points}
-            `;
-
-            const thirdPlace = document.createElement('div');
-            thirdPlace.className = 'winner-card';
-            thirdPlace.innerHTML = `
-                ${fixedLeaderboard[2].icon} ${fixedLeaderboard[2].name}<br>
-                Points: ${fixedLeaderboard[2].points}
-            `;
-            document.querySelector('.leaderboard').appendChild(thirdPlace);
-        }
-
-
-        function resetForm() {
-            document.getElementById('wastePhoto').value = '';
-            document.getElementById('preview').style.display = 'none';
-            updateLeaderboard();
-        }
-
-        // Initial load
-        updateLeaderboard();
-    </script>
+    // Initial load
+    loadLeaderboard();
+  </script>
 </body>
 </html>
